@@ -11,7 +11,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    environment: LS   # ✅ ENVIRONMENT NAME
+    environment: LS  
 
     steps:
       - name: Checkout repository
@@ -21,7 +21,7 @@ jobs:
         run: |
           curl -L --fail "$SOURCE_M3U_URL" -o source.m3u
         env:
-          SOURCE_M3U_URL: ${{ secrets.LS }}   # ✅ SECRET KEY NAME
+          SOURCE_M3U_URL: ${{ secrets.LS }}   
 
       - name: Clean & filter M3U (SAFE URL KEEP)
         run: |
