@@ -2,7 +2,7 @@ name: Auto Update M3U (Cleaned)
 
 on:
   schedule:
-    - cron: "*/10 * * * *"   # every 10 minutes
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -20,43 +20,56 @@ jobs:
         run: |
           curl -L --fail https://fifabd.site/OPLLX5/LIVE2.m3u -o source.m3u
 
-      - name: Clean & filter M3U
+      - name: Clean & filter M3U (SAFE URL KEEP)
         run: |
           awk '
-          BEGIN { skip=0 }
+          BEGIN {
+            keep=1
+          }
 
-          # ================== BLOCK BANNERS / ADS ==================
-          /RANAPK/ { next }
-          /JOIN TG/ { next }
-          /Telegram/ { next }
-          /t\.me/ { next }
-          /ফাইল চুরি/ { next }
-          /END____/ { next }
+          # ---------------- BLOCK TEXT / BANNERS ----------------
+          /RANAPK/ && !/^https?:\/\// { keep=0; next }
+          /JOIN TG/ { keep=0; next }
+          /Telegram/ { keep=0; next }
+          /t\.me/ { keep=0; next }
+          /ফাইল চুরি/ { keep=0; next }
+          /END____/ { keep=0; next }
 
-          # ================== BLOCK WELCOME TEXT ==================
-          /WELCOME/ { skip=1; next }
-          /Welcome/ { skip=1; next }
-          /welcome/ { skip=1; next }
-          /•.*WELCOME.*•/ { skip=1; next }
-          /★.*WELCOME.*★/ { skip=1; next }
-          /●.*WELCOME.*●/ { skip=1; next }
-          /---.*WELCOME.*---/ { skip=1; next }
+          # ---------------- BLOCK WELCOME TEXT ----------------
+          /WELCOME/ && !/^https?:\/\// { keep=0; next }
+          /Welcome/ && !/^https?:\/\// { keep=0; next }
+          /welcome/ && !/^https?:\/\// { keep=0; next }
+          /•.*WELCOME.*•/ { keep=0; next }
+          /★.*WELCOME.*★/ { keep=0; next }
+          /●.*WELCOME.*●/ { keep=0; next }
+          /---.*WELCOME.*---/ { keep=0; next }
 
-          # ================== BLOCK EMPTY EXTINF ==================
-          /^#EXTINF:-1[[:space:]]*$/ { skip=1; next }
+          # ---------------- HANDLE EXTINF ----------------
+          /^#EXTINF/ {
+            keep=1
 
-          # ================== BLOCK FAKE STREAMS ==================
-          /entry\.mp4/ { skip=1; next }
+            # block empty EXTINF
+            if ($0 ~ /^#EXTINF:-1[[:space:]]*$/) keep=0
 
-          # ================== BLOCK WELCOME IN LOGO ==================
-          /tvg-logo=.*[Ww]elcome/ { skip=1; next }
-          /tvg-logo=.*[Ww]elcomes/ { skip=1; next }
+            # block welcome in logo
+            if ($0 ~ /tvg-logo=.*[Ww]elcome/) keep=0
+            if ($0 ~ /tvg-logo=.*[Ww]elcomes/) keep=0
 
-          # ================== SKIP URL IF EXTINF BLOCKED ==================
-          skip==1 && /^http/ { skip=0; next }
+            if (keep==1) print
+            next
+          }
 
-          # ================== PRINT VALID LINES ==================
-          { skip=0; print }
+          # ---------------- HANDLE URL ----------------
+          /^https?:\/\// {
+            if (keep==1) print
+            keep=1
+            next
+          }
+
+          # ---------------- DEFAULT ----------------
+          {
+            if (keep==1) print
+          }
           ' source.m3u > LIVE2.m3u
 
       - name: Commit and push if changed
@@ -65,5 +78,5 @@ jobs:
           git config user.email "m3u-bot@users.noreply.github.com"
 
           git add LIVE2.m3u
-          git diff --cached --quiet || git commit -m "Auto update LIVE2.m3u (cleaned)"
+          git diff --cached --quiet || git commit -m "Auto update LIVE2.m3u (cleaned safely)"
           git push
