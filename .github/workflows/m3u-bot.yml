@@ -1,4 +1,4 @@
-name: Auto Update M3U
+name: Auto Update M3U (Cleaned)
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write   # 🔴 THIS FIXES THE FAILURE
+  contents: write
 
 jobs:
   update:
@@ -16,9 +16,39 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download M3U
+      - name: Download source M3U
         run: |
-          curl -L --fail https://fifabd.site/OPLLX5/LIVE2.m3u -o LIVE2.m3u
+          curl -L --fail https://fifabd.site/OPLLX5/LIVE2.m3u -o source.m3u
+
+      - name: Clean & filter M3U
+        run: |
+          awk '
+          BEGIN { skip=0 }
+
+          # Skip RANAPK banners
+          /RANAPK/ { next }
+          /JOIN TG/ { next }
+          /Telegram/ { next }
+          /t\.me/ { next }
+          /ফাইল চুরি/ { next }
+          /END____/ { next }
+
+          # Skip empty EXTINF
+          /^#EXTINF:-1[[:space:]]*$/ { skip=1; next }
+
+          # Skip promo MP4 links
+          /entry\.mp4/ { skip=1; next }
+
+          # Skip if tvg-logo contains welcome / welcomes
+          /tvg-logo=.*[Ww]elcome/ { skip=1; next }
+          /tvg-logo=.*[Ww]elcomes/ { skip=1; next }
+
+          # If previous EXTINF was invalid, skip URL
+          skip==1 && /^http/ { skip=0; next }
+
+          # Print valid lines
+          { skip=0; print }
+          ' source.m3u > LIVE2.m3u
 
       - name: Commit and push if changed
         run: |
@@ -26,5 +56,5 @@ jobs:
           git config user.email "m3u-bot@users.noreply.github.com"
 
           git add LIVE2.m3u
-          git diff --cached --quiet || git commit -m "Auto update LIVE2.m3u"
+          git diff --cached --quiet || git commit -m "Auto update LIVE2.m3u (cleaned)"
           git push
