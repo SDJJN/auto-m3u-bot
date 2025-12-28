@@ -2,7 +2,7 @@ name: Auto Update M3U (Cleaned)
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/10 * * * *"   # every 10 minutes
   workflow_dispatch:
 
 permissions:
@@ -25,7 +25,7 @@ jobs:
           awk '
           BEGIN { skip=0 }
 
-          # Skip RANAPK banners
+          # ================== BLOCK BANNERS / ADS ==================
           /RANAPK/ { next }
           /JOIN TG/ { next }
           /Telegram/ { next }
@@ -33,20 +33,29 @@ jobs:
           /ফাইল চুরি/ { next }
           /END____/ { next }
 
-          # Skip empty EXTINF
+          # ================== BLOCK WELCOME TEXT ==================
+          /WELCOME/ { skip=1; next }
+          /Welcome/ { skip=1; next }
+          /welcome/ { skip=1; next }
+          /•.*WELCOME.*•/ { skip=1; next }
+          /★.*WELCOME.*★/ { skip=1; next }
+          /●.*WELCOME.*●/ { skip=1; next }
+          /---.*WELCOME.*---/ { skip=1; next }
+
+          # ================== BLOCK EMPTY EXTINF ==================
           /^#EXTINF:-1[[:space:]]*$/ { skip=1; next }
 
-          # Skip promo MP4 links
+          # ================== BLOCK FAKE STREAMS ==================
           /entry\.mp4/ { skip=1; next }
 
-          # Skip if tvg-logo contains welcome / welcomes
+          # ================== BLOCK WELCOME IN LOGO ==================
           /tvg-logo=.*[Ww]elcome/ { skip=1; next }
           /tvg-logo=.*[Ww]elcomes/ { skip=1; next }
 
-          # If previous EXTINF was invalid, skip URL
+          # ================== SKIP URL IF EXTINF BLOCKED ==================
           skip==1 && /^http/ { skip=0; next }
 
-          # Print valid lines
+          # ================== PRINT VALID LINES ==================
           { skip=0; print }
           ' source.m3u > LIVE2.m3u
 
