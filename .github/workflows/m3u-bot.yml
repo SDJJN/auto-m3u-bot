@@ -11,23 +11,23 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    environment: LS   # ✅ ENVIRONMENT NAME
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download source M3U
+      - name: Download source M3U (hidden)
         run: |
-          curl -L --fail https://fifabd.site/OPLLX5/LIVE2.m3u -o source.m3u
+          curl -L --fail "$SOURCE_M3U_URL" -o source.m3u
+        env:
+          SOURCE_M3U_URL: ${{ secrets.LS }}   # ✅ SECRET KEY NAME
 
       - name: Clean & filter M3U (SAFE URL KEEP)
         run: |
           awk '
-          BEGIN {
-            keep=1
-          }
+          BEGIN { keep=1 }
 
-          # ---------------- BLOCK TEXT / BANNERS ----------------
           /RANAPK/ && !/^https?:\/\// { keep=0; next }
           /JOIN TG/ { keep=0; next }
           /Telegram/ { keep=0; next }
@@ -35,7 +35,6 @@ jobs:
           /ফাইল চুরি/ { keep=0; next }
           /END____/ { keep=0; next }
 
-          # ---------------- BLOCK WELCOME TEXT ----------------
           /WELCOME/ && !/^https?:\/\// { keep=0; next }
           /Welcome/ && !/^https?:\/\// { keep=0; next }
           /welcome/ && !/^https?:\/\// { keep=0; next }
@@ -44,32 +43,22 @@ jobs:
           /●.*WELCOME.*●/ { keep=0; next }
           /---.*WELCOME.*---/ { keep=0; next }
 
-          # ---------------- HANDLE EXTINF ----------------
           /^#EXTINF/ {
             keep=1
-
-            # block empty EXTINF
             if ($0 ~ /^#EXTINF:-1[[:space:]]*$/) keep=0
-
-            # block welcome in logo
             if ($0 ~ /tvg-logo=.*[Ww]elcome/) keep=0
             if ($0 ~ /tvg-logo=.*[Ww]elcomes/) keep=0
-
             if (keep==1) print
             next
           }
 
-          # ---------------- HANDLE URL ----------------
           /^https?:\/\// {
             if (keep==1) print
             keep=1
             next
           }
 
-          # ---------------- DEFAULT ----------------
-          {
-            if (keep==1) print
-          }
+          { if (keep==1) print }
           ' source.m3u > LIVE2.m3u
 
       - name: Commit and push if changed
