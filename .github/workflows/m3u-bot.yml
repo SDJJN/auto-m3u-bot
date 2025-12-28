@@ -2,7 +2,7 @@ name: Auto Update M3U
 
 on:
   schedule:
-    - cron: "*/10 * * * *"   # every 10 minutes
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -10,16 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Download M3U
         run: |
-          curl -L --silent --show-error \
-          https://fifabd.site/OPLLX5/LIVE2.m3u \
-          -o LIVE2.m3u
+          curl -L https://fifabd.site/OPLLX5/LIVE2.m3u -o LIVE2.m3u
 
-      - name: Commit & Push if changed
+      - name: Commit and push if changed
         run: |
           git config user.name "m3u-bot"
           git config user.email "m3u-bot@users.noreply.github.com"
@@ -27,4 +25,3 @@ jobs:
           git add LIVE2.m3u
           git diff --cached --quiet || git commit -m "Auto update LIVE2.m3u"
           git push
-
