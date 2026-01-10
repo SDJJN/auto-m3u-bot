@@ -18,7 +18,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Download source M3U from secret
+      # 2️⃣ Download source M3U from secret (403 FIXED)
       - name: Download source M3U (hidden)
         run: |
           if [ -z "$SOURCE_M3U_URL" ]; then
@@ -26,7 +26,13 @@ jobs:
             exit 1
           fi
 
-          curl -L --fail "$SOURCE_M3U_URL" -o source.m3u
+          curl -L \
+            -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \
+            -H "Accept: */*" \
+            -H "Referer: https://google.com" \
+            --fail \
+            "$SOURCE_M3U_URL" \
+            -o source.m3u
 
           echo "Source M3U line count:"
           wc -l source.m3u
