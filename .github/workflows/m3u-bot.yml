@@ -2,7 +2,7 @@ name: Auto Update M3U (Cleaned)
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+  - cron: "0 */6 * * *"
   workflow_dispatch:
 
 permissions:
