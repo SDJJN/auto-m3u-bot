@@ -14,20 +14,27 @@ jobs:
     environment: LS
 
     steps:
+      # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2️⃣ Download source M3U from secret
       - name: Download source M3U (hidden)
         run: |
           if [ -z "$SOURCE_M3U_URL" ]; then
-            echo "SOURCE_M3U_URL secret is missing"
+            echo "ERROR: SOURCE_M3U_URL secret missing"
             exit 1
           fi
+
           curl -L --fail "$SOURCE_M3U_URL" -o source.m3u
+
+          echo "Source M3U line count:"
+          wc -l source.m3u
         env:
           SOURCE_M3U_URL: ${{ secrets.LS }}
 
-      - name: Clean & filter M3U (SAFE URL KEEP)
+      # 3️⃣ Clean & filter M3U (YOUR LOGIC – UNCHANGED)
+      - name: Clean & filter M3U
         run: |
           awk '
           BEGIN { keep=1 }
@@ -65,15 +72,26 @@ jobs:
           { if (keep==1) print }
           ' source.m3u > LIVE2.m3u
 
+          # Safety: ensure LIVE2.m3u always exists
+          if [ ! -s LIVE2.m3u ]; then
+            echo "#EXTM3U" > LIVE2.m3u
+          fi
+
+          echo "Output M3U line count:"
+          wc -l LIVE2.m3u
+
+      # 4️⃣ Commit & push only if changed
       - name: Commit and push if changed
         run: |
           git config user.name "m3u-bot"
           git config user.email "m3u-bot@users.noreply.github.com"
 
           git add LIVE2.m3u
+          git status --short
+
           if ! git diff --cached --quiet; then
             git commit -m "Auto update LIVE2.m3u (cleaned safely)"
             git push
           else
-            echo "No changes detected"
+            echo "No changes detected, skipping commit"
           fi
