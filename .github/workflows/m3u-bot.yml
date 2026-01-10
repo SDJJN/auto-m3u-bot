@@ -11,41 +11,26 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    environment: LS
 
     steps:
       # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Download SOURCE M3U from secret LS (403 BYPASS)
-      - name: Download source M3U (from LS)
+      # 2️⃣ Download source file (ranapk.m3u from GitHub RAW)
+      - name: Download source playlist
         run: |
-          if [ -z "$SOURCE_M3U_URL" ]; then
-            echo "ERROR: LS secret is missing"
-            exit 1
-          fi
+          SOURCE_URL="https://raw.githubusercontent.com/SDJJN/auto-m3u-bot/main/ranapk.m3u"
 
-          echo "Downloading source M3U from secret LS..."
+          echo "Downloading source from:"
+          echo "$SOURCE_URL"
 
-          curl --http1.1 -L \
-            -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36" \
-            -H "Accept: */*" \
-            -H "Accept-Language: en-US,en;q=0.9" \
-            -H "Accept-Encoding: gzip, deflate, br" \
-            -H "Referer: https://ranapk.online/" \
-            -H "Connection: keep-alive" \
-            --compressed \
-            --fail \
-            "$SOURCE_M3U_URL" \
-            -o source.m3u
+          curl -L --fail "$SOURCE_URL" -o source.m3u
 
-          echo "Source M3U line count:"
+          echo "Source file line count:"
           wc -l source.m3u
-        env:
-          SOURCE_M3U_URL: ${{ secrets.LS }}
 
-      # 3️⃣ Clean & filter M3U (YOUR EXACT LOGIC – UNCHANGED)
+      # 3️⃣ Clean & filter (YOUR EXACT LOGIC)
       - name: Clean & filter M3U
         run: |
           awk '
@@ -84,15 +69,15 @@ jobs:
           { if (keep==1) print }
           ' source.m3u > LIVE2.m3u
 
-          # Safety: ensure valid M3U always exists
+          # Safety: always valid M3U file
           if [ ! -s LIVE2.m3u ]; then
             echo "#EXTM3U" > LIVE2.m3u
           fi
 
-          echo "Cleaned M3U line count:"
+          echo "Cleaned output line count:"
           wc -l LIVE2.m3u
 
-      # 4️⃣ Commit & push CLEANED M3U to GitHub
+      # 4️⃣ Commit & push if changed
       - name: Commit and push if changed
         run: |
           git config user.name "m3u-bot"
@@ -101,7 +86,7 @@ jobs:
           git add LIVE2.m3u
 
           if ! git diff --cached --quiet; then
-            git commit -m "Auto update LIVE2.m3u (cleaned safely)"
+            git commit -m "Auto update LIVE2.m3u (cleaned)"
             git push
           else
             echo "No changes detected"
