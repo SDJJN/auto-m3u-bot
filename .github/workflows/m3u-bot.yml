@@ -2,7 +2,7 @@ name: Auto Update M3U (Cleaned)
 
 on:
   schedule:
-  - cron: "0 */6 * * *"
+    - cron: "0 */6 * * *"   # every 6 hours (UTC)
   workflow_dispatch:
 
 permissions:
@@ -18,18 +18,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Download source M3U from secret (403 FIXED)
-      - name: Download source M3U (hidden)
+      # 2️⃣ Download SOURCE M3U from secret LS (403 BYPASS)
+      - name: Download source M3U (from LS)
         run: |
           if [ -z "$SOURCE_M3U_URL" ]; then
-            echo "ERROR: SOURCE_M3U_URL secret missing"
+            echo "ERROR: LS secret is missing"
             exit 1
           fi
 
-          curl -L \
-            -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \
+          echo "Downloading source M3U from secret LS..."
+
+          curl --http1.1 -L \
+            -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36" \
             -H "Accept: */*" \
-            -H "Referer: https://google.com" \
+            -H "Accept-Language: en-US,en;q=0.9" \
+            -H "Accept-Encoding: gzip, deflate, br" \
+            -H "Referer: https://ranapk.online/" \
+            -H "Connection: keep-alive" \
+            --compressed \
             --fail \
             "$SOURCE_M3U_URL" \
             -o source.m3u
@@ -39,7 +45,7 @@ jobs:
         env:
           SOURCE_M3U_URL: ${{ secrets.LS }}
 
-      # 3️⃣ Clean & filter M3U (YOUR LOGIC – UNCHANGED)
+      # 3️⃣ Clean & filter M3U (YOUR EXACT LOGIC – UNCHANGED)
       - name: Clean & filter M3U
         run: |
           awk '
@@ -78,26 +84,25 @@ jobs:
           { if (keep==1) print }
           ' source.m3u > LIVE2.m3u
 
-          # Safety: ensure LIVE2.m3u always exists
+          # Safety: ensure valid M3U always exists
           if [ ! -s LIVE2.m3u ]; then
             echo "#EXTM3U" > LIVE2.m3u
           fi
 
-          echo "Output M3U line count:"
+          echo "Cleaned M3U line count:"
           wc -l LIVE2.m3u
 
-      # 4️⃣ Commit & push only if changed
+      # 4️⃣ Commit & push CLEANED M3U to GitHub
       - name: Commit and push if changed
         run: |
           git config user.name "m3u-bot"
           git config user.email "m3u-bot@users.noreply.github.com"
 
           git add LIVE2.m3u
-          git status --short
 
           if ! git diff --cached --quiet; then
             git commit -m "Auto update LIVE2.m3u (cleaned safely)"
             git push
           else
-            echo "No changes detected, skipping commit"
+            echo "No changes detected"
           fi
