@@ -67,15 +67,15 @@ jobs:
           }
 
           { if (keep==1) print }
-          ' source.m3u > LIVE2.m3u
+          ' source.m3u > LIVE3.m3u
 
           # Safety: always valid M3U file
-          if [ ! -s LIVE2.m3u ]; then
-            echo "#EXTM3U" > LIVE2.m3u
+          if [ ! -s LIVE3.m3u ]; then
+            echo "#EXTM3U" > LIVE3.m3u
           fi
 
           echo "Cleaned output line count:"
-          wc -l LIVE2.m3u
+          wc -l LIVE3.m3u
 
       # 4️⃣ Commit & push if changed
       - name: Commit and push if changed
@@ -83,10 +83,10 @@ jobs:
           git config user.name "m3u-bot"
           git config user.email "m3u-bot@users.noreply.github.com"
 
-          git add LIVE2.m3u
+          git add LIVE3.m3u
 
           if ! git diff --cached --quiet; then
-            git commit -m "Auto update Tvdclean.m3u (cleaned)"
+            git commit -m "Auto update LIVE3.m3u (cleaned)"
             git push
           else
             echo "No changes detected"
