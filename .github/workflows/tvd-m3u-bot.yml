@@ -1,1 +1,93 @@
+name: Auto Update M3U (Cleaned)
 
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours (UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Download source file (ranapk.m3u from GitHub RAW)
+      - name: Download source playlist
+        run: |
+          SOURCE_URL="https://raw.githubusercontent.com/SDJJN/auto-m3u-bot/main/TVD.m3u.m3u"
+
+          echo "Downloading source from:"
+          echo "$SOURCE_URL"
+
+          curl -L --fail "$SOURCE_URL" -o source.m3u
+
+          echo "Source file line count:"
+          wc -l source.m3u
+
+      # 3️⃣ Clean & filter (YOUR EXACT LOGIC)
+      - name: Clean & filter M3U
+        run: |
+          awk '
+          BEGIN { keep=1 }
+
+          /RANAPK/ && !/^https?:\/\// { keep=0; next }
+          /JOIN TG/ { keep=0; next }
+          /Telegram/ { keep=0; next }
+          /t\.me/ { keep=0; next }
+          /ফাইল চুরি/ { keep=0; next }
+          /END____/ { keep=0; next }
+
+          /WELCOME/ && !/^https?:\/\// { keep=0; next }
+          /Welcome/ && !/^https?:\/\// { keep=0; next }
+          /welcome/ && !/^https?:\/\// { keep=0; next }
+          /•.*WELCOME.*•/ { keep=0; next }
+          /★.*WELCOME.*★/ { keep=0; next }
+          /●.*WELCOME.*●/ { keep=0; next }
+          /---.*WELCOME.*---/ { keep=0; next }
+
+          /^#EXTINF/ {
+            keep=1
+            if ($0 ~ /^#EXTINF:-1[[:space:]]*$/) keep=0
+            if ($0 ~ /tvg-logo=.*[Ww]elcome/) keep=0
+            if ($0 ~ /tvg-logo=.*[Ww]elcomes/) keep=0
+            if (keep==1) print
+            next
+          }
+
+          /^https?:\/\// {
+            if (keep==1) print
+            keep=1
+            next
+          }
+
+          { if (keep==1) print }
+          ' source.m3u > LIVE2.m3u
+
+          # Safety: always valid M3U file
+          if [ ! -s LIVE2.m3u ]; then
+            echo "#EXTM3U" > LIVE2.m3u
+          fi
+
+          echo "Cleaned output line count:"
+          wc -l LIVE2.m3u
+
+      # 4️⃣ Commit & push if changed
+      - name: Commit and push if changed
+        run: |
+          git config user.name "m3u-bot"
+          git config user.email "m3u-bot@users.noreply.github.com"
+
+          git add LIVE2.m3u
+
+          if ! git diff --cached --quiet; then
+            git commit -m "Auto update Tvdclean.m3u (cleaned)"
+            git push
+          else
+            echo "No changes detected"
+          fi
