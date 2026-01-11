@@ -20,7 +20,7 @@ jobs:
       # 2️⃣ Download source file (ranapk.m3u from GitHub RAW)
       - name: Download source playlist
         run: |
-          SOURCE_URL="https://raw.githubusercontent.com/SDJJN/auto-m3u-bot/main/TVD.m3u.m3u"
+          SOURCE_URL="https://raw.githubusercontent.com/SDJJN/auto-m3u-bot/main/TVD.m3u"
 
           echo "Downloading source from:"
           echo "$SOURCE_URL"
