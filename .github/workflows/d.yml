@@ -1,0 +1,74 @@
+name: Denver JSON to JSTAR M3U
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */12 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Fetch JSON from secret (d) and convert to M3U
+        shell: bash
+        env:
+          SRC: ${{ secrets.d }}
+        run: |
+          set -euo pipefail
+
+          OUTPUT="denver.m3u"
+          TMP_JSON="denver.json"
+
+          echo "#EXTM3U" > "$OUTPUT"
+
+          # Fetch JSON using secret URL
+          curl -fsSL "$SRC" -o "$TMP_JSON"
+
+          # Convert JSON → JSTAR M3U
+          jq -c '.[]' "$TMP_JSON" | while read -r ch; do
+            id=$(echo "$ch" | jq -r '.channel_id // empty')
+            name=$(echo "$ch" | jq -r '.channel_name // empty')
+            group=$(echo "$ch" | jq -r '.channel_genre // "Jiostar"')
+            logo=$(echo "$ch" | jq -r '.channel_logo // empty')
+            url=$(echo "$ch" | jq -r '.channel_url // empty')
+            kid=$(echo "$ch" | jq -r '.keyId // empty')
+            key=$(echo "$ch" | jq -r '.key // empty')
+            ua=$(echo "$ch" | jq -r '.UserAgent // "plaYtv/7.1.3 (Linux;Android 13) ygx/69.1 ExoPlayerLib/824.0"')
+
+            # Skip invalid entries
+            if [[ -z "$name" || -z "$url" ]]; then
+              continue
+            fi
+
+            echo "#EXTINF:-1 tvg-id=\"$id\" group-title=\"$group\" tvg-logo=\"$logo\",$name" >> "$OUTPUT"
+
+            # Add DRM only if keys exist
+            if [[ -n "$kid" && -n "$key" ]]; then
+              echo "#KODIPROP:inputstream.adaptive.license_type=clearkey" >> "$OUTPUT"
+              echo "#KODIPROP:inputstream.adaptive.license_key=$kid:$key" >> "$OUTPUT"
+              echo "#EXTVLCOPT:http-user-agent=$ua" >> "$OUTPUT"
+              echo "#EXTHTTP:" >> "$OUTPUT"
+            fi
+
+            echo "$url" >> "$OUTPUT"
+            echo "" >> "$OUTPUT"
+          done
+
+      - name: Commit and push M3U
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          git add denver.m3u
+          git commit -m "Auto build denver.m3u from JSON secret (d)" || echo "No changes"
+          git push
