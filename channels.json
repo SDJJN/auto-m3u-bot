@@ -1,0 +1,290 @@
+[
+  {
+    "name": "ast",
+    "type": "mpd",
+    "url": "https://astr-two.vercel.app/2504/default_primary.mpd",
+    "drm": null
+  },
+  {
+    "name": "bain-sprts",
+    "type": "mpd",
+    "url": "https://ottb.live.cf.ww.aiv-cdn.net/lhr-nitro/live/clients/dash/enc/ic4k1h7vow/out/v1/50728d03ca6943cb84d25a8060ce3fc3/cenc.mpd",
+    "drm": null
+  },
+  {
+    "name": "channel7",
+    "type": "m3u8",
+    "url": "https://hugh.cdn.rumble.cloud/live/e6pv21nm/slot-67/zemj-b9vl_1080p/chunklist.m3u8",
+    "drm": null
+  },
+  {
+    "name": "clife-women",
+    "type": "mpd",
+    "url": "https://neacdnpop3-edge02.aws.playco.com/live/eds/CricLife_Women_27112025/DASH/CricLife_Women_27112025.mpd",
+    "drm": {
+      "keyId": "9dc5ddd99e3c723bf109a504da715dac",
+      "key": "d39d55e9ba386a86641ca9668abf2b0d"
+    }
+  },
+  {
+    "name": "cricbuzz",
+    "type": "mpd",
+    "url": "https://ev-fast-mpd.starzplayarabia.com/live/eds/CricLife2/DASH/CricLife2.mpd",
+    "drm": {
+      "keyId": "48bef83b4c6a3c5189b01b0126210da4",
+      "key": "bd085230b7b09e50954fe0af111a8a9f"
+    }
+  },
+  {
+    "name": "criclife",
+    "type": "mpd",
+    "url": "https://neacdnpop3-edge02.aws.playco.com/live/eds/CricLife1/DASH/CricLife1.mpd",
+    "drm": {
+      "keyId": "1e23e51b09a67b83813c17049870bcd4",
+      "key": "c3d6288e378b0dc55320fd0e6fd2e55f"
+    }
+  },
+  {
+    "name": "criclife3",
+    "type": "mpd",
+    "url": "https://neacdnpop3-edge02.aws.playco.com/live/eds/Criclife_3/DASH/Criclife_3.mpd",
+    "drm": {
+      "keyId": "4e8b5ddac5332a4e66c002b4c0f22322",
+      "key": "d06de29b0eacb81ac6e3f325849047e8"
+    }
+  },
+  {
+    "name": "espn2",
+    "type": "mpd",
+    "url": "https://otte.live.fly.ww.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/mrskysvotx/out/v1/ad58961bd8fd48d2944e461c034b8914/cenc.mpd",
+    "drm": null
+  },
+  {
+    "name": "fox",
+    "type": "m3u8",
+    "url": "https://momixiosplayer.pages.dev/?id=https://foxhindi.pages.dev/playlist.m3u8",
+    "drm": null
+  },
+  {
+    "name": "hotstr",
+    "type": "m3u8",
+    "url": "https://1a-1791.com/live/u7gf26qm/slot-53/sdv3-n3jv/chunklist_DVR.m3u8",
+    "drm": null
+  },
+  {
+    "name": "hub-sports",
+    "type": "mpd",
+    "url": "https://co2-bks400-04.starhubgo.com/bpk-token/2ab@swn5y41tw3d15id1aipsu14r35un1hw5sGFGFGiruvgda/bpk-tv/HubSports4HDnew/output/manifest.mpd",
+    "drm": null
+  },
+  {
+    "name": "kkpk",
+    "type": "m3u8",
+    "url": "https://cdn30091.kalis393fev.com/stream2/i-cdn-0/aa15181ef8c5562b5627797750588a7e/MJTMsp1RshGTygnMNRUR2N2MSlnWXZEdMNDZzQWe5MDZzMmdZJTO1R2RWVHZDljekhkSsl1VwYnWtx2cihVT21UbVJTW6ZUaPRkSppFVsxWTEVleZdVR4llMWpWTykENNRUUx4UbKxWTEtWP:1765635630:150.242.149.148:738fc01a89d23acda7abc115262f7fe4a37aa317590a3777cf075671a54d8d5b/1080/index.m3u8",
+    "drm": null
+  },
+  {
+    "name": "nz1",
+    "type": "mpd",
+    "url": "https://dice-live-oc.akamaized.net/hdntl=exp=1768218146~acl=%2f*~id=09159dd8-8a04-451a-b708-f05d016fcb8a~data=hdntl,dWlkPTQwMTY0NnxkY2Uuc2t5bnomaXA9NzguMTQzLjIzNS4yMTgmZXhwPTE3NjgyMTgxNzUmZWlkPTIxOTAyNiZjaWQ9ZGNlLnNreW56Jm9pZD0zMTgmdHlwZT1MSVZF~hmac=335e39da46d52c9e891bb12f5a8f20e09b9fb4026697a74b798df7f385080759/dash/live/2093722/294921-313667/manifest-d.mpd",
+    "drm": {
+      "keyId": "4d346b1d1ae64d4a800409cffa14983e",
+      "key": "208c972bd2da4359ac94e6944fe378b6"
+    }
+  },
+  {
+    "name": "pakvssa",
+    "type": "mpd",
+    "url": "https://ottb.live.cf.ww.aiv-cdn.net/sin-nitro/live/dash/enc/ky25bcoshh/out/v1/3ed1fff1b5b944d5be7c7031e6df1675/cenc.mpd",
+    "drm": null
+  },
+  {
+    "name": "premier-sports1",
+    "type": "mpd",
+    "url": "https://ottb.live.cf.ww.aiv-cdn.net/lhr-nitro/live/clients/dash/enc/vwq77hfgzw/out/v1/b858e0b845c64cec953887bd4269e4ea/cenc.mpd",
+    "drm": {
+      "keyId": "1444f4235529f183f0a5a486befe9cdb",
+      "key": "e5e3fec67a1bb3472a2089c8a0a2557f"
+    }
+  },
+  {
+    "name": "premier",
+    "type": "mpd",
+    "url": "https://awslive02.stan.video/out/v1/a5968ff9d1e84e28a46512b10ca6fef9/index.mpd",
+    "drm": null
+  },
+  {
+    "name": "premierhub2",
+    "type": "mpd",
+    "url": "https://mh-bks400-08.starhubgo.com/bpk-token/2ac@h31bg2trphyqp4jncaz1dxdmyxj5oqb5h5c2fjca/bpk-tv/HubPremier2_4K/output/manifest.mpd",
+    "drm": null
+  },
+  {
+    "name": "premierhub3",
+    "type": "mpd",
+    "url": "https://co2-bks400-05.starhubgo.com/bpk-token/2ab@g4zaeaprhdqam1wbyeyzftbiawrpgabygazcnyda/bpk-tv/HubPremier3/output/manifest.mpd",
+    "drm": null
+  },
+  {
+    "name": "shoq",
+    "type": "mpd",
+    "url": "https://live.shoq.com.pk/live/eds/ICC_Women_World_Cup_2025/DASH/ICC_Women_World_Cup_2025.mpd",
+    "drm": {
+      "keyId": "a6dfc4f17d70d8d07639659193f03b25",
+      "key": "893eacfabe386144b81733d622a7ad17"
+    }
+  },
+  {
+    "name": "skynz1",
+    "type": "mpd",
+    "url": "https://dice-live-oc.akamaized.net/hdntl=exp=1765015936~acl=%2f*~id=3fdbecda-6b01-48ac-8477-3c421c98225f~data=hdntl,dWlkPTU3MjQwMXxkY2Uuc2t5bnomaXA9MTE4LjY3LjE5OS4xMTImZXhwPTE3NjUwMTU5NjUmZWlkPTI5NDkyMSZjaWQ9ZGNlLnNreW56Jm9pZD0zMTgmdHlwZT1MSVZF~hmac=3f8b3ef04e1235ca757012a3dc7501ec0e7bb9187a2cb3ad61ccc419cc7a7942/dash/live/2093671/294921-311597/manifest-d.mpd",
+    "drm": {
+      "keyId": "4d346b1d1ae64d4a800409cffa14983e",
+      "key": "208c972bd2da4359ac94e6944fe378b6"
+    }
+  },
+  {
+    "name": "sliv",
+    "type": "m3u8",
+    "url": "https://media.onestream.studio/content/hls/live/live_4476994_m94sy760y/hls.m3u8",
+    "drm": null
+  },
+  {
+    "name": "sony-max",
+    "type": "mpd",
+    "url": "https://sundirectgo-live.pc.cdn.bitgravity.com/hd21/dth.mpd",
+    "drm": null
+  },
+  {
+    "name": "str-sprts",
+    "type": "m3u8",
+    "url": "https://use22.playlist.live-video.net/v1/playlist/CssFYF1uXZU1bSW1osWbuMM3wjpVYVk3DWWdtq5xAali_d3FjzCRTpzxN15l9M5OiVy8_Vok-lLdXFnq35do6U1bUbLgq9JY5Opg9WzSWHN4va54sD0SVk3eWBDll1HvhN5ekHxKeXYKVm1kK3KI-AuNXr3Ezt2dLPZ8Fj-4efbcwaXWesa0-HGGOtj4QBvNRWmRqbciBevEPlbUpumtcAMJTbju2EBrzAbGdOzXH_bMZUHD5GeW15NJa2xkavQsRa2zqwu88rqTDgqdaCvWlBtnhf19rk5c38Py6EmXANO31XeKKr55p_wOfPBzzIwiw8lLW9RNInyL90Wk83eSWjwgvTtIQyoJZnltbvZ0anE6YfvpNioDyifbkIY_bfc27Nflvh75glLNlylj2XBvRpscWW4CgiCKOdCxWUenKn0cAhlVHtZxwCRw_0lJpDb3ldfZyt8HBp6BH4dIf1q3v3uulZ36P1SgHQTMP6426dGlnbz-fZEtsVD2eunzJeFnXfRLvC3la3-f2lO_egvK0WRVWK6V77Qi-9HmaExCg4iOxvL59ZNsQIiMZC_ha6gVyqtHjHCy7ESRBfVw2hOiDmOfCCI7ieLtX1yF7KhXgihmf4Eu2L0J3LhxpwhhuykntWi4FUjkq0s7WCNHJ_J37V1NPSxjOzwTakUQP-ghuSAM0J2R4jm143mVw-97JgaVNjPYqGV4vug9wVkwyfNNVwgt5p8rjA7gZo5LpwG8DhdXVMUX5ILHQk9eliDnFAi7wegDF3_qea7EF5C_cbX72HMjT6zHpZxpxUoUjO025q_sFaqM6ZMXLbmnFoX7meXCJKK2cqMphqebdBbF5c0OktXkE13x5X3ORSDsrbyI4e7U8cj8Jq1M_UpyGk87KCq-LRr41_R_z9HAlQksgosdbnt-tGSyGj5t-b4G0f4RH4Ha9kQKzqa6RX4xNjyTRBoMILkRS30r7Sk3ni4NIAEqCXVzLXdlc3QtMjDUDQ.m3u8",
+    "drm": null
+  },
+  {
+    "name": "str-tamil",
+    "type": "mpd",
+    "url": "https://jiotvpllive.cdn.jio.com/bpk-tv/Star_Sports2_Tamil_HD_BTS/output/index.mpd",
+    "drm": {
+      "keyId": "dc44fe6251825774b90d58dcfa7d94e0",
+      "key": "63e3ae853f483a86752b5b9e6d61eb20"
+    }
+  },
+  {
+    "name": "str1-eng",
+    "type": "mpd",
+    "url": "https://jiotvpllive.cdn.jio.com/bpk-tv/Star_Sports_HD1_BTS/output/index.mpd",
+    "drm": {
+      "keyId": "965dc2ddb1d85138ad787999a7f30ca5",
+      "key": "859695076e67fe961836b564db6d689c"
+    }
+  },
+  {
+    "name": "str1-hindi",
+    "type": "m3u8",
+    "url": "https://hugh.cdn.rumble.cloud/live/k5e12sb4/slot-3/1g6j-g9yt_1080p/chunklist.m3u8",
+    "drm": null
+  },
+  {
+    "name": "str1-tamil",
+    "type": "mpd",
+    "url": "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_1_Tamil_HD_BTS/output/index.mpd",
+    "drm": {
+      "keyId": "2272c0bc6b2e5cb090b1f55996e0026c",
+      "key": "943923934de1d5536ab01c67fca8b337"
+    }
+  },
+  {
+    "name": "str1",
+    "type": "mpd",
+    "url": "https://jiotvpllive.cdn.jio.com/bpk-tv/Star_Sports_HD1_Hindi_BTS/output/index.mpd",
+    "drm": {
+      "keyId": "400131994b445d8c8817202248760fda",
+      "key": "2d56cb6f07a75b9aff165d534ae2bfc4"
+    }
+  },
+  {
+    "name": "t20",
+    "type": "m3u8",
+    "url": "https://tvsen5.aynaott.com/c9EpzZ6fQBJ3/tracks-v1a1/mono.ts.m3u8",
+    "drm": null
+  },
+  {
+    "name": "tnt1",
+    "type": "mpd",
+    "url": "https://a201aivottlinear-a.akamaihd.net/OTTB/lhr-nitro/live/dash/enc/wf8usag51e/out/v1/bd3b0c314fff4bb1ab4693358f3cd2d3/cenc.mpd",
+    "drm": {
+      "keyId": "d0f2e5c39e70c18f29bf77768a1ad89a",
+      "key": "d6853c51fcf37a18905f0609972395d7"
+    }
+  },
+  {
+    "name": "tnt2",
+    "type": "mpd",
+    "url": "https://aba3uy3aaaaaaaamfjv2jyrjdxcj4.otte.live.cf.ww.aiv-cdn.net/sin-nitro/live/dash/enc/f0qvkrra8j/out/v1/f8fa17f087564f51aa4d5c700be43ec4/cenc.mpd",
+    "drm": {
+      "keyId": "9f51f3dc6313ac8bc668e2d9d1c04dfa",
+      "key": "74bc63e5a193454a91ca494975db33f9"
+    }
+  },
+  {
+    "name": "tnt3",
+    "type": "mpd",
+    "url": "https://a201aivottlinear-a.akamaihd.net/OTTB/lhr-nitro/live/dash/enc/lsdasbvglv/out/v1/bb548a3626cd4708afbb94a58d71dce9/cenc.mpd",
+    "drm": {
+      "keyId": "a93c1cbfdccd23233bac13540c693e7f",
+      "key": "2f6ab2e6693eb847eff3c9da8f9d01fc"
+    }
+  },
+  {
+    "name": "tnt4",
+    "type": "mpd",
+    "url": "https://a201aivottlinear-a.akamaihd.net/OTTB/lhr-nitro/live/dash/enc/i2pcjr4pe5/out/v1/912e9db56d75403b8a9ac0a719110f36/cenc.mpd",
+    "drm": {
+      "keyId": "192b1115da041585c77200128549efa1",
+      "key": "634e10efe4abbb14be400a3ccbac0258"
+    }
+  },
+  {
+    "name": "willo-ios",
+    "type": "m3u8",
+    "url": "https://aps33.playlist.live-video.net/v1/playlist/CrsF36aeETfywbe3ZHAIplh9E0Z9_gtmQuXQdElPE34X06098qb6XAUooawS6LHWuheyhwKMj2whPwNlc_hGMi--0IT36Bh9Uuxs3K42RRRiaVJvBPyGtNQON_QdWIy0idECxoxWbNcd2qUrMWeBHDTuLNPT0HYHKT1XYkDd-3Fo0FRvt40aviCI9g2BCw3G4t4S3A5JnkLdyPb6eQUWKUBQWB78QUm_MjyCCWwrdUxYvRQmOgwtP9fLx-rEc-P4yW_U9il-qEjmQ1fYoPxOI0bcWE1wbcveVgiNdB-pHFN0-ZTHeVRaVTOnXCvJWsp0jUBBN2Ri9PJI_-JEJW3st-3f1uVhCL_y8k8Sr3PlqSxrXwl_eSZvkUpDTqF7EkBxCgiDGEdh3suapUcv4HoQJZeLuHYC07lCJh2IecusVG4kLnq1jppxVZIg_EDkCuu7KQunndKUS926OVSW1vCZSSI40l6onPic8k9fgZsiBKgpb00nMV5sbSLjcCGzZVnsgnALW7L1irm9XD-evk4brYGt3XepxiclOwiioTfMfY4W9CE-5-Gh_OEKVilsyZ7FcuuK8pdZgDngogs6HbW7qqtGswnge60TS321AkQT7ei9MPZ1xR833ynACwQKU_Iit3XwFzXGxqu2BjTiMvh3UlK_9_JHFUIWLha_J1-Q0CNEERaSVENs99KCswJo96dx8qIRpGE8ebyRoz9kj0mBHPEE3_XjaPRrNyfBLEGTQ4KXkJQg8KcP7MaBHNblETw1Lb2C_ZB5zNR-SXcTwcPLxISKCtSb15qGAAgW7Chdyn5HzEhrgg35KVBAyLdR0tfXSVYcnH6DkFRffyce9ZuyslcAxQ7yGhjqenFwVNaE8t3EOLiKe65p462CvubqCO1IjoY5Ms409BJZOICtweoKGX66No6XsdNbP9rmXBvVGgxUkBHljLjJ64SHwbQgASoJdXMtd2VzdC0yMIQO.m3u8",
+    "drm": null
+  },
+  {
+    "name": "willo-sports",
+    "type": "mpd",
+    "url": "https://a201aivottlinear-a.akamaihd.net/OTTB/lhr-nitro/clients/dash/enc/f60kqesunw/out/v1/a435ed7a00f947deb4369b46d8f2fb70/cenc.mpd",
+    "drm": {
+      "keyId": "1779c27b9d077a3ba0c9cc1bb9a94b9f",
+      "key": "cc5cf3b7928fb9e0a1ee6a8b566f0a8e"
+    }
+  },
+  {
+    "name": "willo-sports2",
+    "type": "mpd",
+    "url": "https://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/jufvexhaqf/out/v1/b218966eb1c84d6fba6dc68f47154e3c/cenc.mpd",
+    "drm": {
+      "keyId": "1d95f034e5b8b6794a447ef73f83e15d",
+      "key": "af682ffc1e5e749a5fecbbc7d69ad942"
+    }
+  },
+  {
+    "name": "willo",
+    "type": "mpd",
+    "url": "https://a201aivottlinear-a.akamaihd.net/OTTB/lhr-nitro/live/clients/dash/enc/9gsr5sojq3/out/v1/3c0a8662bbf44015865b7f8221b638b1/cenc.mpd",
+    "drm": {
+      "keyId": "3f06445585cf5e8388a16dc3816bdefb",
+      "key": "7511cda8c9bc7ce5c9c44435d765950d"
+    }
+  },
+  {
+    "name": "zee",
+    "type": "mpd",
+    "url": "https://d1g8wgjurz8via.cloudfront.net/bpk-tv/Zeecinemahd/default/manifest.mpd",
+    "drm": {
+      "keyId": "f56beaac9f124616872c741c9ce4fa4e",
+      "key": "5d40a903238f4ad98abbed1877d4e3d1"
+    }
+  }
+]
