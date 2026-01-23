@@ -1,5 +1,8 @@
 name: JSTAR DRM Workflow
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
   schedule:
@@ -12,6 +15,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build JSTAR DRM playlist
         shell: bash
@@ -19,7 +24,6 @@ jobs:
           SRC: ${{ secrets.s }}
         run: |
           echo "#EXTM3U" > jstar_drm.m3u
-
           curl -fsSL "$SRC" > source.m3u
 
           extinf=""
@@ -66,7 +70,7 @@ jobs:
             fi
           done < source.m3u
 
-      - name: Commit output
+      - name: Commit & push
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
