@@ -1,4 +1,4 @@
-name: Extract Streams From HTML Repo
+name: Extract HTML Streams → M3U (JPG Logos)
 
 permissions:
   contents: write
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  extract:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,88 +19,111 @@ jobs:
         with:
           node-version: 18
 
-      - name: Fetch HTML files from repo link (secret h)
+      - name: Download HTML repo (secret h)
         env:
           REPO_URL: ${{ secrets.h }}
         run: |
           set -e
-
-          # Normalize GitHub repo URL → ZIP
-          ZIP_URL=$(printf "%s" "$REPO_URL" | sed 's|github.com/|github.com/|')/archive/refs/heads/main.zip
-
-          echo "Downloading repo ZIP:"
-          echo "$ZIP_URL"
-
+          ZIP_URL="$REPO_URL/archive/refs/heads/main.zip"
           curl -fsSL "$ZIP_URL" -o repo.zip
           unzip -q repo.zip
           rm repo.zip
+          mv */ repo
 
-          DIR=$(ls -d */ | head -n1)
-          mv "$DIR" repo
-
-      - name: Extract streams and DRM
+      - name: Generate M3U with JPG logos
         run: |
-          cat > extract.js <<'EOF'
+          cat > build.js <<'EOF'
           const fs = require("fs");
           const path = require("path");
 
           const BASE = "repo";
-          const results = [];
+          const OUT = "playlist_jpg.m3u";
 
-          function walk(dir) {
-            for (const file of fs.readdirSync(dir)) {
-              const p = path.join(dir, file);
-              const s = fs.statSync(p);
+          const LOGOS = {
+            "ast":"https://upload.wikimedia.org/wikipedia/commons/6/6a/Astro_logo.svg",
+            "bain-sprts":"https://upload.wikimedia.org/wikipedia/commons/5/5e/BeIN_Sports_logo.svg",
+            "channel7":"https://upload.wikimedia.org/wikipedia/en/3/3e/Seven_Network_logo.svg",
+            "clife-women":"https://upload.wikimedia.org/wikipedia/commons/4/4e/CricLife_logo.png",
+            "cricbuzz":"https://upload.wikimedia.org/wikipedia/en/9/9b/Cricbuzz_logo.png",
+            "criclife":"https://upload.wikimedia.org/wikipedia/commons/4/4e/CricLife_logo.png",
+            "criclife3":"https://upload.wikimedia.org/wikipedia/commons/4/4e/CricLife_logo.png",
+            "espn2":"https://upload.wikimedia.org/wikipedia/commons/2/2f/ESPN2_logo.svg",
+            "fox":"https://upload.wikimedia.org/wikipedia/commons/6/67/Fox_Networks_Group_logo.svg",
+            "hotstr":"https://upload.wikimedia.org/wikipedia/commons/1/1e/Disney%2B_Hotstar_logo.svg",
+            "hub-sports":"https://upload.wikimedia.org/wikipedia/en/6/69/StarHub_logo.svg",
+            "kkpk":"https://upload.wikimedia.org/wikipedia/commons/8/89/Sports_channel_icon.png",
+            "nz1":"https://upload.wikimedia.org/wikipedia/en/8/82/Sky_Sport_NZ_logo.svg",
+            "pakvssa":"https://upload.wikimedia.org/wikipedia/commons/5/5c/PTV_Sports_logo.png",
+            "premier-sports1":"https://upload.wikimedia.org/wikipedia/en/4/4f/Premier_Sports_logo.png",
+            "premier":"https://upload.wikimedia.org/wikipedia/en/4/4f/Premier_Sports_logo.png",
+            "premierhub2":"https://upload.wikimedia.org/wikipedia/en/4/4f/Premier_Sports_logo.png",
+            "premierhub3":"https://upload.wikimedia.org/wikipedia/en/4/4f/Premier_Sports_logo.png",
+            "shoq":"https://upload.wikimedia.org/wikipedia/commons/3/3f/Shoq_logo.png",
+            "skynz1":"https://upload.wikimedia.org/wikipedia/en/8/82/Sky_Sport_NZ_logo.svg",
+            "sliv":"https://upload.wikimedia.org/wikipedia/commons/0/0f/SonyLIV_logo.png",
+            "sony-max":"https://upload.wikimedia.org/wikipedia/en/9/9b/Sony_MAX_logo.png",
+            "str-sprts":"https://upload.wikimedia.org/wikipedia/en/6/66/Star_Sports_logo.svg",
+            "str-tamil":"https://upload.wikimedia.org/wikipedia/en/6/66/Star_Sports_logo.svg",
+            "str1-eng":"https://upload.wikimedia.org/wikipedia/en/6/66/Star_Sports_logo.svg",
+            "str1-hindi":"https://upload.wikimedia.org/wikipedia/en/6/66/Star_Sports_logo.svg",
+            "str1-tamil":"https://upload.wikimedia.org/wikipedia/en/6/66/Star_Sports_logo.svg",
+            "str1":"https://upload.wikimedia.org/wikipedia/en/6/66/Star_Sports_logo.svg",
+            "t20":"https://upload.wikimedia.org/wikipedia/commons/8/89/Cricket_ball_icon.svg",
+            "tnt1":"https://upload.wikimedia.org/wikipedia/en/0/0c/TNT_Sports_logo.svg",
+            "tnt2":"https://upload.wikimedia.org/wikipedia/en/0/0c/TNT_Sports_logo.svg",
+            "tnt3":"https://upload.wikimedia.org/wikipedia/en/0/0c/TNT_Sports_logo.svg",
+            "tnt4":"https://upload.wikimedia.org/wikipedia/en/0/0c/TNT_Sports_logo.svg",
+            "willo-ios":"https://upload.wikimedia.org/wikipedia/en/3/3e/Willo_TV_logo.png",
+            "willo-sports":"https://upload.wikimedia.org/wikipedia/en/3/3e/Willo_TV_logo.png",
+            "willo-sports2":"https://upload.wikimedia.org/wikipedia/en/3/3e/Willo_TV_logo.png",
+            "willo":"https://upload.wikimedia.org/wikipedia/en/3/3e/Willo_TV_logo.png",
+            "zee":"https://upload.wikimedia.org/wikipedia/commons/5/5f/Zee_Cinema_logo.png"
+          };
 
-              if (s.isDirectory()) walk(p);
-              else if (file.endsWith(".html")) processFile(p);
+          let out = "#EXTM3U\n\n";
+
+          function walk(dir){
+            for(const f of fs.readdirSync(dir)){
+              const p = path.join(dir,f);
+              if(fs.statSync(p).isDirectory()) walk(p);
+              else if(f.endsWith(".html")) parse(p);
             }
           }
 
-          function processFile(file) {
-            const html = fs.readFileSync(file, "utf8");
-            const name = path.basename(file, ".html");
+          function parse(file){
+            const name = path.basename(file,".html");
+            const html = fs.readFileSync(file,"utf8");
 
-            const urlMatch =
-              html.match(/https?:\/\/[^"' ]+\.mpd/) ||
-              html.match(/https?:\/\/[^"' ]+\.m3u8/);
+            const url =
+              html.match(/https?:\/\/[^"' ]+\.mpd/)?.[0] ||
+              html.match(/https?:\/\/[^"' ]+\.m3u8/)?.[0];
 
-            if (!urlMatch) return;
+            if(!url) return;
 
-            const url = urlMatch[0];
-            const type = url.endsWith(".mpd") ? "mpd" : "m3u8";
+            const drm = html.match(/['"]([0-9a-fA-F]{32})['"]\s*:\s*['"]([0-9a-fA-F]{32})['"]/);
 
-            let drm = null;
-            const drmMatch = html.match(
-              /['"]([0-9a-fA-F]{32})['"]\s*:\s*['"]([0-9a-fA-F]{32})['"]/
-            );
+            const logo = (LOGOS[name] || "").replace(/\.(png|svg).*$/,".jpg");
 
-            if (drmMatch) {
-              drm = {
-                keyId: drmMatch[1],
-                key: drmMatch[2]
-              };
+            out += `#EXTINF:-1 tvg-logo="${logo}",${name}\n`;
+
+            if(drm){
+              out += `#KODIPROP:inputstream.adaptive.license_type=clearkey\n`;
+              out += `#KODIPROP:inputstream.adaptive.license_key=${drm[1]}:${drm[2]}\n`;
             }
 
-            results.push({ name, type, url, drm });
+            out += `${url}\n\n`;
           }
 
           walk(BASE);
-
-          fs.writeFileSync(
-            "channels.json",
-            JSON.stringify(results, null, 2)
-          );
-
-          console.log(`Extracted ${results.length} channels`);
+          fs.writeFileSync(OUT,out);
           EOF
 
-          node extract.js
+          node build.js
 
-      - name: Commit output
+      - name: Commit playlist
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add channels.json
-          git commit -m "Auto extract streams from HTML repo" || echo "No changes"
+          git add playlist_jpg.m3u
+          git commit -m "Generate M3U with JPG logos" || echo "No changes"
           git push
