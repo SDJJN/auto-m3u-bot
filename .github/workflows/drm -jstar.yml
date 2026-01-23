@@ -3,30 +3,28 @@ name: JSTAR DRM Workflow
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 */1 * * *"
 
 jobs:
   jstar:
     runs-on: ubuntu-latest
 
-    env:
-      s: https://raw.githubusercontent.com/fakeall12398-sketch/JIO_TV/main/jstar.m3u
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build JSTAR DRM playlist (inline)
+      - name: Build JSTAR DRM playlist
         shell: bash
+        env:
+          SRC: ${{ secrets.s }}
         run: |
-          echo '#EXTM3U' > jstar_drm.m3u
+          echo "#EXTM3U" > jstar_drm.m3u
 
-          curl -s "$s" > source.m3u
+          curl -fsSL "$SRC" > source.m3u
 
           extinf=""
           clearkey=""
           http=""
-          ua=""
           url=""
 
           while IFS= read -r line; do
@@ -44,10 +42,6 @@ jobs:
 
             if [[ "$line" == \#EXTHTTP* ]]; then
               http="$line"
-            fi
-
-            if [[ "$line" == \#EXTVLCOPT:http-user-agent* ]]; then
-              ua="#EXTVLCOPT:http-user-agent=StreamFlex/7.1.3 (Linux;Android 13) StreamFlex/69.1 ExoPlayerLib/824.0"
             fi
 
             if [[ "$line" == http* && "$line" == *".mpd"* ]]; then
@@ -68,15 +62,14 @@ jobs:
               extinf=""
               clearkey=""
               http=""
-              ua=""
               url=""
             fi
           done < source.m3u
 
-      - name: Commit result
+      - name: Commit output
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add jstar_drm.m3u
-          git commit -m "Auto update JSTAR DRM playlist" || true
+          git commit -m "Update JSTAR DRM playlist" || true
           git push
