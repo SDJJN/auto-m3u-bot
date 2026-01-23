@@ -1,4 +1,4 @@
-name: D M3U
+name: JSON to JSTAR Playlist
 
 permissions:
   contents: write
@@ -19,23 +19,30 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Fetch JSON from secret (d) and convert to M3U
+      - name: Build playlist from JSON secret
         shell: bash
         env:
           SRC: ${{ secrets.d }}
         run: |
           set -euo pipefail
 
-          OUTPUT="d.m3u"
-          TMP_JSON="denver.json"
+          OUTPUT="playlist.m3u"
+          RAW="input_raw.txt"
+          CLEAN="input_clean.json"
 
           echo "#EXTM3U" > "$OUTPUT"
 
-          # Fetch JSON using secret URL
-          curl -fsSL "$SRC" -o "$TMP_JSON"
+          # Fetch raw JSON / JS
+          curl -fsSL "$SRC" -o "$RAW"
 
-          # Convert JSON → JSTAR M3U
-          jq -c '.[]' "$TMP_JSON" | while read -r ch; do
+          # Clean: keep only JSON array
+          sed -n '/\[/,/\]/p' "$RAW" > "$CLEAN"
+
+          # Validate JSON
+          jq empty "$CLEAN"
+
+          # Convert JSON → M3U
+          jq -c '.[]' "$CLEAN" | while read -r ch; do
             id=$(echo "$ch" | jq -r '.channel_id // empty')
             name=$(echo "$ch" | jq -r '.channel_name // empty')
             group=$(echo "$ch" | jq -r '.channel_genre // "Jiostar"')
@@ -46,9 +53,7 @@ jobs:
             ua=$(echo "$ch" | jq -r '.UserAgent // "plaYtv/7.1.3 (Linux;Android 13) ygx/69.1 ExoPlayerLib/824.0"')
 
             # Skip invalid entries
-            if [[ -z "$name" || -z "$url" ]]; then
-              continue
-            fi
+            [[ -z "$name" || -z "$url" ]] && continue
 
             echo "#EXTINF:-1 tvg-id=\"$id\" group-title=\"$group\" tvg-logo=\"$logo\",$name" >> "$OUTPUT"
 
@@ -64,11 +69,11 @@ jobs:
             echo "" >> "$OUTPUT"
           done
 
-      - name: Commit and push M3U
+      - name: Commit and push playlist
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
 
-          git add d.m3u
-          git commit -m "Auto build denver.m3u from JSON secret (d)" || echo "No changes"
+          git add playlist.m3u
+          git commit -m "Auto update playlist from JSON" || echo "No changes"
           git push
