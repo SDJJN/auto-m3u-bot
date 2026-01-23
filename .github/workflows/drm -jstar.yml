@@ -1,5 +1,6 @@
 name: JSTAR DRM Workflow
 
+# 🔐 REQUIRED permissions (fixes 403 push error)
 permissions:
   contents: write
 
@@ -13,16 +14,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      # 📥 Checkout repo with write token
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
+      # 🛠 Build playlist (syntax-safe)
       - name: Build JSTAR DRM playlist
         shell: bash
         env:
           SRC: ${{ secrets.s }}
         run: |
+          set -euo pipefail
+
           echo "#EXTM3U" > jstar_drm.m3u
           curl -fsSL "$SRC" > source.m3u
 
@@ -31,27 +37,45 @@ jobs:
           http=""
           url=""
 
-          while IFS= read -r line; do
-            line="$(echo "$line" | tr -d '\r')"
+          while IFS= read -r line || [ -n "$line" ]; do
+            line="$(printf '%s' "$line" | tr -d '\r')"
 
-            if [[ "$line" == \#EXTINF* ]]; then
+            if [[ "$line" == "#EXTINF"* ]]; then
               extinf="$line"
+              clearkey=""
+              http=""
+              url=""
+              continue
             fi
 
+            # Case 1: Kodi ClearKey via license_key URL
             if [[ "$line" == *"license_key=https://"* ]]; then
-              keyid=$(echo "$line" | sed -n 's/.*keyid=\([^&]*\).*/\1/p')
-              key=$(echo "$line" | sed -n 's/.*key=\([^&]*\).*/\1/p')
-              clearkey="$keyid:$key"
+              keyid="$(printf '%s' "$line" | sed -n 's/.*keyid=\([^&]*\).*/\1/p')"
+              key="$(printf '%s' "$line" | sed -n 's/.*key=\([^&]*\).*/\1/p')"
+              if [[ -n "$keyid" && -n "$key" ]]; then
+                clearkey="$keyid:$key"
+              fi
+              continue
             fi
 
-            if [[ "$line" == \#EXTHTTP* ]]; then
-              http="$line"
-            fi
-
-            if [[ "$line" == http* && "$line" == *".mpd"* ]]; then
+            # Case 2: DRM inside URL
+            if [[ "$line" == http* && "$line" == *"drmScheme=clearkey"* ]]; then
+              clearkey="$(printf '%s' "$line" | sed -n 's/.*drmLicense=\([^&]*\).*/\1/p')"
               url="$line"
+              continue
             fi
 
+            if [[ "$line" == "#EXTHTTP"* ]]; then
+              http="$line"
+              continue
+            fi
+
+            if [[ "$line" == http* && "$line" == *".mpd"* && -z "$url" ]]; then
+              url="$line"
+              continue
+            fi
+
+            # ✍ Write ONLY if DRM exists
             if [[ -n "$extinf" && -n "$clearkey" && -n "$url" ]]; then
               {
                 echo "$extinf"
@@ -70,10 +94,12 @@ jobs:
             fi
           done < source.m3u
 
-      - name: Commit & push
+      # 📤 Commit & push result
+      - name: Commit and push changes
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
+
           git add jstar_drm.m3u
-          git commit -m "Update JSTAR DRM playlist" || true
+          git commit -m "Auto update JSTAR DRM playlist" || echo "No changes to commit"
           git push
