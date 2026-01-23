@@ -1,0 +1,106 @@
+name: Extract Streams From HTML Repo
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Fetch HTML files from repo link (secret h)
+        env:
+          REPO_URL: ${{ secrets.h }}
+        run: |
+          set -e
+
+          # Normalize GitHub repo URL → ZIP
+          ZIP_URL=$(printf "%s" "$REPO_URL" | sed 's|github.com/|github.com/|')/archive/refs/heads/main.zip
+
+          echo "Downloading repo ZIP:"
+          echo "$ZIP_URL"
+
+          curl -fsSL "$ZIP_URL" -o repo.zip
+          unzip -q repo.zip
+          rm repo.zip
+
+          DIR=$(ls -d */ | head -n1)
+          mv "$DIR" repo
+
+      - name: Extract streams and DRM
+        run: |
+          cat > extract.js <<'EOF'
+          const fs = require("fs");
+          const path = require("path");
+
+          const BASE = "repo";
+          const results = [];
+
+          function walk(dir) {
+            for (const file of fs.readdirSync(dir)) {
+              const p = path.join(dir, file);
+              const s = fs.statSync(p);
+
+              if (s.isDirectory()) walk(p);
+              else if (file.endsWith(".html")) processFile(p);
+            }
+          }
+
+          function processFile(file) {
+            const html = fs.readFileSync(file, "utf8");
+            const name = path.basename(file, ".html");
+
+            const urlMatch =
+              html.match(/https?:\/\/[^"' ]+\.mpd/) ||
+              html.match(/https?:\/\/[^"' ]+\.m3u8/);
+
+            if (!urlMatch) return;
+
+            const url = urlMatch[0];
+            const type = url.endsWith(".mpd") ? "mpd" : "m3u8";
+
+            let drm = null;
+            const drmMatch = html.match(
+              /['"]([0-9a-fA-F]{32})['"]\s*:\s*['"]([0-9a-fA-F]{32})['"]/
+            );
+
+            if (drmMatch) {
+              drm = {
+                keyId: drmMatch[1],
+                key: drmMatch[2]
+              };
+            }
+
+            results.push({ name, type, url, drm });
+          }
+
+          walk(BASE);
+
+          fs.writeFileSync(
+            "channels.json",
+            JSON.stringify(results, null, 2)
+          );
+
+          console.log(`Extracted ${results.length} channels`);
+          EOF
+
+          node extract.js
+
+      - name: Commit output
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add channels.json
+          git commit -m "Auto extract streams from HTML repo" || echo "No changes"
+          git push
