@@ -1,0 +1,82 @@
+name: JSTAR DRM Workflow
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */6 * * *"
+
+jobs:
+  jstar:
+    runs-on: ubuntu-latest
+
+    env:
+      s: https://raw.githubusercontent.com/fakeall12398-sketch/JIO_TV/main/jstar.m3u
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build JSTAR DRM playlist (inline)
+        shell: bash
+        run: |
+          echo '#EXTM3U' > jstar_drm.m3u
+
+          curl -s "$s" > source.m3u
+
+          extinf=""
+          clearkey=""
+          http=""
+          ua=""
+          url=""
+
+          while IFS= read -r line; do
+            line="$(echo "$line" | tr -d '\r')"
+
+            if [[ "$line" == \#EXTINF* ]]; then
+              extinf="$line"
+            fi
+
+            if [[ "$line" == *"license_key=https://"* ]]; then
+              keyid=$(echo "$line" | sed -n 's/.*keyid=\([^&]*\).*/\1/p')
+              key=$(echo "$line" | sed -n 's/.*key=\([^&]*\).*/\1/p')
+              clearkey="$keyid:$key"
+            fi
+
+            if [[ "$line" == \#EXTHTTP* ]]; then
+              http="$line"
+            fi
+
+            if [[ "$line" == \#EXTVLCOPT:http-user-agent* ]]; then
+              ua="#EXTVLCOPT:http-user-agent=StreamFlex/7.1.3 (Linux;Android 13) StreamFlex/69.1 ExoPlayerLib/824.0"
+            fi
+
+            if [[ "$line" == http* && "$line" == *".mpd"* ]]; then
+              url="$line"
+            fi
+
+            if [[ -n "$extinf" && -n "$clearkey" && -n "$url" ]]; then
+              {
+                echo "$extinf"
+                echo "#KODIPROP:inputstream.adaptive.license_type=clearkey"
+                echo "#KODIPROP:inputstream.adaptive.license_key=$clearkey"
+                echo "#EXTVLCOPT:http-user-agent=StreamFlex/7.1.3 (Linux;Android 13) StreamFlex/69.1 ExoPlayerLib/824.0"
+                [[ -n "$http" ]] && echo "$http"
+                echo "$url"
+                echo ""
+              } >> jstar_drm.m3u
+
+              extinf=""
+              clearkey=""
+              http=""
+              ua=""
+              url=""
+            fi
+          done < source.m3u
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add jstar_drm.m3u
+          git commit -m "Auto update JSTAR DRM playlist" || true
+          git push
