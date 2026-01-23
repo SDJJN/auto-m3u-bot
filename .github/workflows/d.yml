@@ -45,13 +45,11 @@ jobs:
             key=$(jq -r '.key' <<< "$ch")
             ua=$(jq -r '.UserAgent // "plaYtv/7.1.3 (Linux;Android 13)"' <<< "$ch")
 
-            echo "#EXTINF:-1 tvg-id=\"$id\" group-title=\"$group\" tvg-logo=\"$logo\",$name" >> "$OUTPUT"
-            echo "#KODIPROP:inputstream.adaptive.license_type=clearkey" >> "$OUTPUT"
-            echo "#KODIPROP:inputstream.adaptive.license_key=$kid:$key" >> "$OUTPUT"
-            echo "#EXTVLCOPT:http-user-agent=$ua" >> "$OUTPUT"
-            echo "#EXTHTTP:" >> "$OUTPUT"
-            echo "$url" >> "$OUTPUT"
-            echo "" >> "$OUTPUT"
+           echo "#EXTINF:-1 tvg-id=\"$id\" group-title=\"$group\" tvg-logo=\"$logo\",$name" >> "$OUTPUT"
+           echo "#KODIPROP:inputstream.adaptive.license_type=clearkey" >> "$OUTPUT"
+           echo "#KODIPROP:inputstream.adaptive.license_key=$kid:$key" >> "$OUTPUT"
+           echo "#EXTHTTP:$url" >> "$OUTPUT"
+           echo "" >> "$OUTPUT"
           done
 
       - name: Commit and push playlist
